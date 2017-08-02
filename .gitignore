@@ -9,6 +9,8 @@ composer.lock
 /public/hot
 /public/storage
 /storage/*.key
+/storage/framework/sessions/*
+/storage/db.sqlite
 /vendor
 /.idea
 /.vagrant

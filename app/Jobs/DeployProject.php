@@ -86,8 +86,9 @@ class DeployProject implements ShouldQueue {
     // Create new symlink
     $link = $this->getProjectRoot() . DIRECTORY_SEPARATOR . "current";
 
-    if (file_exists($link)) {
-      unlink($link);
+    clearstatcache(true, $link);
+    if (is_link($link)) {
+        unlink($link);
     }
     symlink($folder, $link);
 
