@@ -19,13 +19,12 @@ class Writable implements PluginInterface {
         foreach ($params as $file) {
             $file = trim($file);
             $file = trim($file, "/");
+            $file = $deploy->getDeploymentRoot() . DIRECTORY_SEPARATOR . $file;
 
-            // Create symlink
-            $file = $deploy->getDeploymentRoot()
-                    . DIRECTORY_SEPARATOR . $file;
+            $deploy->addLog("Make $file writable");
 
-            chgrp($file, "www-data");
-            chmod($file, 0775);
+            // chgrp($file, "www-data");
+            // chmod($file, 0775);
         }
     }
 

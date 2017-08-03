@@ -88,43 +88,6 @@ class DeployTest extends TestCase {
         (new DeployProject($project))->handle();
     }
 
-    public function testWritablePlugin() {
-        $deploy_content = ""
-                . "- plugin: App\Plugins\Writable\n"
-                . "  params:\n"
-                . "  - writable";
-
-
-        file_put_contents(
-                $this->repository_path . "/" . self::DEPLOY_FILE, $deploy_content);
-
-        file_put_contents(
-                $this->repository_path . "/writable", "Wazup!");
-
-        (new Process("git add " . self::DEPLOY_FILE))
-                ->setWorkingDirectory($this->repository_path)
-                ->run();
-
-        (new Process("git add writable"))
-                ->setWorkingDirectory($this->repository_path)
-                ->run();
-
-        (new Process("git commit -m \"Added empty deploy\""))
-                ->setWorkingDirectory($this->repository_path)
-                ->run();
-
-        $project = new Project();
-        $project->id = 0;
-        $project->name = $this->project_name;
-        $project->repository = $this->repository;
-        $job = new DeployProject($project);
-        $job->handle();
-
-        $this->assertEquals(33277, fileperms("/tmp/test/current/writable"));
-
-    }
-
-
     /**
      * Test the shared plugin.
      */
@@ -152,5 +115,55 @@ class DeployTest extends TestCase {
         $project->repository = $this->repository;
         $job = new DeployProject($project);
         $job->handle();
+    }
+
+    public function testWritablePlugin() {
+        $deploy_content = ""
+                . "- plugin: App\Plugins\Writable\n"
+                . "  params:\n"
+                . "  - writable\n"
+                . "  - app/writable";
+
+
+        file_put_contents(
+                $this->repository_path . "/" . self::DEPLOY_FILE, $deploy_content);
+
+        file_put_contents(
+                $this->repository_path . "/writable", "Wazup!");
+
+        mkdir(
+                $this->repository_path . "/app/writable",
+                0755,
+                true);
+
+        file_put_contents(
+                $this->repository_path . "/app/writable/empty",
+                "");
+
+        (new Process("git add " . self::DEPLOY_FILE))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git add writable"))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git add app"))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git commit -m \"Added test files to repos\""))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        $project = new Project();
+        $project->id = 0;
+        $project->name = $this->project_name;
+        $project->repository = $this->repository;
+        $job = new DeployProject($project);
+        $job->handle();
+
+        $this->assertEquals(33277, fileperms("/tmp/test/current/writable"));
+
     }
 }
