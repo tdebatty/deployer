@@ -4,6 +4,7 @@ namespace App\Plugins;
 
 use App\PluginInterface;
 use App\Deployment;
+use Symfony\Component\Process\Process;
 
 /**
  * Ensure a file or folder is writable (group = www-data and g+w).
@@ -23,8 +24,15 @@ class Writable implements PluginInterface {
 
             $deploy->addLog("Make $file writable");
 
-            chgrp($file, "www-data");
-            chmod($file, 0775);
+            $process = new Process("chgrp -R www-data $file");
+            $process->setWorkingDirectory($deploy->getDeploymentRoot());
+            $process->run();
+            $deploy->addLog($process->getOutput());
+
+            $process = new Process("chmod -R g+w $file");
+            $process->setWorkingDirectory($deploy->getDeploymentRoot());
+            $process->run();
+            $deploy->addLog($process->getOutput());
         }
     }
 

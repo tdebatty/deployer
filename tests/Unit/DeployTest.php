@@ -163,7 +163,7 @@ class DeployTest extends TestCase {
         $job = new DeployProject($project);
         $job->handle();
 
-        $this->assertEquals(33277, fileperms("/tmp/test/current/writable"));
+        $this->assertEquals(33204, fileperms("/tmp/test/current/writable"));
 
     }
 }

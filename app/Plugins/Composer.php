@@ -6,11 +6,11 @@ use App\PluginInterface;
 use App\Deployment;
 use Symfony\Component\Process\Process;
 
-class RunCmd implements PluginInterface {
+class Composer implements PluginInterface {
 
     public function run(Deployment $deploy, $params) {
-        $cmd = $params["cmd"];
-        $process = new Process($cmd);
+
+        $process = new Process("composer install");
         $process->setWorkingDirectory($deploy->getDeploymentRoot());
         $process->run();
 
