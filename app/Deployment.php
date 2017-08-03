@@ -13,6 +13,12 @@ class Deployment extends Model {
      */
     protected $dateFormat = 'U';
 
+    public function __construct(array $attributes = array()) {
+        parent::__construct($attributes);
+
+        $this->tag = date("YmdHis");
+    }
+
     public function project() {
         return $this->belongsTo('App\Project');
     }
@@ -29,7 +35,7 @@ class Deployment extends Model {
     public function getDeploymentRoot() {
         $folder = $this->getProjectRoot()
                 . DIRECTORY_SEPARATOR . "releases"
-                . DIRECTORY_SEPARATOR . date("YmdHis");
+                . DIRECTORY_SEPARATOR . $this->tag;
 
         if (!is_dir($folder)) {
             mkdir($folder, 0755, true);

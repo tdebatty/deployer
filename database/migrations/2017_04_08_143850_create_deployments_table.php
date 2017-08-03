@@ -16,6 +16,7 @@ class CreateDeploymentsTable extends Migration
         Schema::create('deployments', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('project_id');
+            $table->bigInteger('tag');
             $table->longText('log');
             $table->integer('status');
             $table->timestamps();

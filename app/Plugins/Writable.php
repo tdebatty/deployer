@@ -23,7 +23,7 @@ class Writable implements PluginInterface {
 
             $deploy->addLog("Make $file writable");
 
-            // chgrp($file, "www-data");
+            chgrp($file, "www-data");
             chmod($file, 0775);
         }
     }
