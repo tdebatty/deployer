@@ -3,6 +3,11 @@ Simple deployer for GIT projects
 
 ## Installation
 
+### User
+
+adduser deployer www-data
+ssh-keygen -t rsa
+
 ### App
 
 ```
@@ -18,7 +23,7 @@ APP_DEBUG=false
 APP_LOG_LEVEL=error
 APP_URL=http://deployer.web-d.be:8080
 
-DEPLOY_ROOT=/home/www
+DEPLOY_ROOT=/var/www
 ```
 
 ```composer install```
@@ -31,11 +36,11 @@ If you are using a sqlite database:
 
 ```php artisan migrate```
 
-php artisan db:seed
+```php artisan db:seed```
 
 ### Apache
 
-```sudo nano /etc/apache2/sites-available``` :
+```sudo nano /etc/apache2/sites-available/deployer.conf``` :
 
 ```
 <VirtualHost *:8080>
@@ -44,9 +49,9 @@ php artisan db:seed
 
         ServerAdmin webmaster@localhost
 
-        DocumentRoot /home/deployer/public
+        DocumentRoot /var/www/deployer/public
 
-        <Directory /home/deployer/public/>
+        <Directory /var/www/deployer/public/>
                 AllowOverride All
                 Require all granted
         </Directory>
@@ -63,11 +68,29 @@ mkdir -p deployer/storage/framework/sessions
 sudo chgrp -R www-data deployer
 sudo chmod -R g+w deployer/storage/
 
-### Jobs queue
+### Jobs and queue
 
+Redis:
+sudo apt-get install redis
 nano .env
+QUEUE_DRIVER=redis
 
-QUEUE_DRIVER=database
+Supervisor:
+sudo apt-get install supervisor
+sudo nano /etc/supervisor/conf.d/deployer.conf
+
+```
+[program:deployer]
+user=deployer
+command=php artisan queue:work --sleep=3 --tries=1 --daemon
+directory=/home/www/deployer
+process_name=queue_%(process_num)s
+numprocs=4
+stdout_logfile=/home/www/deployer/storage/logs/supervisord-%(process_num)s-stdout.log
+stderr_logfile=/home/www/deployer/storage/logs/supervisord-%(process_num)s-stderr.log
+autostart=true
+autorestart=true
+```
 
 admin@example.com
 admin
