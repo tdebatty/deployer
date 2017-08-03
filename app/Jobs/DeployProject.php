@@ -96,7 +96,10 @@ class DeployProject implements ShouldQueue {
 
     foreach ($tasks as $task) {
       $plugin = $task['plugin'];
-      $params = $task['params'];
+      $params = null;
+      if (isset ($task['params'])) {
+          $params = $task['params'];
+      }
 
       /* @var $p PluginInterface */
       $p = new $plugin;
