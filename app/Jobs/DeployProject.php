@@ -33,58 +33,37 @@ class DeployProject implements ShouldQueue {
     return $this->project;
   }
 
-  public function getProjectRoot() {
-    return config('deploy.root')
-        . DIRECTORY_SEPARATOR . $this->project->name;
-  }
-
-  public function getDeploymentRoot() {
-    $folder = $this->getProjectRoot()
-        . DIRECTORY_SEPARATOR . "releases"
-        . DIRECTORY_SEPARATOR . date("YmdHis");
-
-    if (!is_dir($folder)) {
-      mkdir($folder, 0755, true);
-    }
-
-    return $folder;
-  }
-
-  public function addLog($log) {
-    $this->log .= $log;
-  }
-
   /**
    * Execute the job.
    *
    * @return void
    */
   public function handle() {
-    $folder = $this->getDeploymentRoot();
+
 
     $deployment = new Deployment();
     $deployment->project()->associate($this->project);
+
+    $folder = $deployment->getDeploymentRoot();
 
     // Clone
     $process = new Process(
         'git clone ' . $this->project->repository . ' ' . $folder);
     $process->run();
-    $deployment->log .= $process->getErrorOutput();
-    $deployment->log .= $process->getExitCode();
+    $deployment->addLog($process->getErrorOutput());
 
     // Checkout branch
     $process = new Process(
         'cd ' . $folder . ' && git checkout ' . $this->project->branch);
     $process->run();
-    $deployment->log .= $process->getOutput();
-    $deployment->log .= $process->getExitCode();
+    $deployment->addLog($process->getOutput());
 
     // Read YAML & execute
     $yaml_file = $folder . DIRECTORY_SEPARATOR . "deploy.yml";
-    $deployment->log .= $this->process_yaml($yaml_file);
+    $this->process_yaml($yaml_file, $deployment);
 
     // Create new symlink
-    $link = $this->getProjectRoot() . DIRECTORY_SEPARATOR . "current";
+    $link = $deployment->getProjectRoot() . DIRECTORY_SEPARATOR . "current";
 
     clearstatcache(true, $link);
     if (is_link($link)) {
@@ -96,36 +75,33 @@ class DeployProject implements ShouldQueue {
     $deployment->save();
   }
 
-  protected function process_yaml($yaml_file) {
+  protected function process_yaml($yaml_file, Deployment $deployment) {
     if (!file_exists($yaml_file)) {
-      return "";
+      return;
     }
 
     try {
       $tasks = Yaml::parse(file_get_contents($yaml_file));
     } catch (ParseException $e) {
-      printf("Unable to parse deploy.yml : %s", $e->getMessage());
+      $deployment->addLog("Unable to parse deploy.yml : " . $e->getMessage());
     }
 
     if ($tasks == null) {
-      return "";
+      return;
     }
 
     if (!is_array($tasks)) {
-      return "";
+      return;
     }
 
-    $return = "";
     foreach ($tasks as $task) {
       $plugin = $task['plugin'];
       $params = $task['params'];
 
       /* @var $p PluginInterface */
       $p = new $plugin;
-      $return .= $p->run($this, $params);
+      $p->run($deployment, $params);
     }
-
-    return $return;
   }
 
 }

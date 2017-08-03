@@ -3,7 +3,7 @@
 namespace App\Plugins;
 
 use App\PluginInterface;
-use App\Jobs\DeployProject;
+use App\Deployment;
 
 /**
  * Ensure a file or folder is writable (group = www-data and g+w).
@@ -14,7 +14,7 @@ use App\Jobs\DeployProject;
  */
 class Writable implements PluginInterface {
 
-    public function run(DeployProject $deploy, $params) {
+    public function run(Deployment $deploy, $params) {
 
         foreach ($params as $file) {
             $file = trim($file);
@@ -24,7 +24,7 @@ class Writable implements PluginInterface {
             $deploy->addLog("Make $file writable");
 
             // chgrp($file, "www-data");
-            // chmod($file, 0775);
+            chmod($file, 0775);
         }
     }
 

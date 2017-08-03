@@ -1,12 +1,12 @@
 <?php
 namespace App;
 
-use App\Jobs\DeployProject;
+use App\Deployment;
 
 /**
  *
  * @author Thibault Debatty
  */
 interface PluginInterface {
-  public function run(DeployProject $deploy, $params);
+  public function run(Deployment $deploy, $params);
 }

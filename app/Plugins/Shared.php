@@ -3,7 +3,7 @@
 namespace App\Plugins;
 
 use App\PluginInterface;
-use App\Jobs\DeployProject;
+use App\Deployment;
 use Symfony\Component\Process\Process;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\Process\Process;
  */
 class Shared implements PluginInterface {
 
-    public function run(DeployProject $deploy, $params) {
+    public function run(Deployment $deploy, $params) {
 
         foreach ($params as $folder) {
             $folder = trim($folder);
