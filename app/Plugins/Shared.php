@@ -31,7 +31,9 @@ class Shared implements PluginInterface {
                     . DIRECTORY_SEPARATOR . "shared"
                     . DIRECTORY_SEPARATOR . $folder;
 
-            mkdir($shared_folder, 0775, true);
+            if (!file_exists($shared_folder)) {
+                mkdir($shared_folder, 0775, true);
+            }
 
             // Create symlink
             $link = $deploy->getDeploymentRoot()

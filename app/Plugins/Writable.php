@@ -22,7 +22,7 @@ class Writable implements PluginInterface {
             $file = trim($file, "/");
             $file = $deploy->getDeploymentRoot() . DIRECTORY_SEPARATOR . $file;
 
-            $deploy->addLog("Make $file writable");
+            $deploy->addLog("Make $file writable\n");
 
             $process = new Process("chgrp -R www-data $file");
             $process->setWorkingDirectory($deploy->getDeploymentRoot());
