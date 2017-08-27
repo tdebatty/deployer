@@ -229,6 +229,37 @@ class DeployTest extends TestCase {
         $this->assertEquals(33204, fileperms("/tmp/test/current/writable"));
 
         $this->assertTrue(is_dir("/tmp/test/current/vendor"));
+    }
 
+    /**
+     * Test the shared plugin.
+     */
+    public function testExecPlugin() {
+
+        // Add deploy.yml file
+        $deploy_content = ""
+                . "- plugin: App\Plugins\Exec\n"
+                . "  params:\n"
+                . "    - echo 1";
+        file_put_contents(
+                $this->repository_path . "/" . self::DEPLOY_FILE, $deploy_content);
+
+        (new Process("git add " . self::DEPLOY_FILE))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git commit -m \"Added empty deploy\""))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        $project = new Project();
+        $project->id = 0;
+        $project->name = $this->project_name;
+        $project->repository = $this->repository;
+        $job = new DeployProject($project);
+        $deploy = $job->handle();
+
+        $lines = explode(PHP_EOL, trim($deploy->log));
+        $this->assertEquals("1", end($lines));
     }
 }
