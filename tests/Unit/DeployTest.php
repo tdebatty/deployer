@@ -161,9 +161,74 @@ class DeployTest extends TestCase {
         $project->name = $this->project_name;
         $project->repository = $this->repository;
         $job = new DeployProject($project);
-        $job->handle();
+        $deploy = $job->handle();
 
+        // Writable file
         $this->assertEquals(33204, fileperms("/tmp/test/current/writable"));
+
+        // Writable directory
+        $this->assertEquals(16893, fileperms("/tmp/test/current/app/writable"));
+    }
+
+    public function testMultiplePlugins() {
+        $deploy_content = ""
+                . "- plugin: App\Plugins\Writable\n"
+                . "  params:\n"
+                . "  - writable\n"
+                . "- plugin: App\Plugins\Composer";
+
+
+        file_put_contents(
+                $this->repository_path . "/" . self::DEPLOY_FILE, $deploy_content);
+
+        file_put_contents(
+                $this->repository_path . "/composer.json",
+                '{
+    "name": "laravel/laravel",
+    "description": "The Laravel Framework.",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "predis/predis": "~1.0"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}');
+
+        file_put_contents(
+                $this->repository_path . "/writable", "Wazup!");
+
+        (new Process("git add " . self::DEPLOY_FILE))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git add writable"))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git add composer.json"))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        (new Process("git commit -m \"Added test files to repos\""))
+                ->setWorkingDirectory($this->repository_path)
+                ->run();
+
+        $project = new Project();
+        $project->id = 0;
+        $project->name = $this->project_name;
+        $project->repository = $this->repository;
+        $job = new DeployProject($project);
+        $deploy = $job->handle();
+
+        // Writable file
+        $this->assertEquals(33204, fileperms("/tmp/test/current/writable"));
+
+        $this->assertTrue(is_dir("/tmp/test/current/vendor"));
 
     }
 }
