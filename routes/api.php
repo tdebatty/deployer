@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('projects/{project}/deploy/{key}', function ($id, $key) {
+  $project = \App\Project::find($id);
+  if ($project->key == $key) {
+    dispatch(new \App\Jobs\DeployProject($project));
+    echo "OK...";
+  }
+});
+
+/*
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
