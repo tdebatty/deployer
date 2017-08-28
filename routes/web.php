@@ -24,6 +24,14 @@ Route::get('projects/{project}/deploy/{key}', function ($id, $key) {
   }
 })->name("deploy");
 
+Route::post('projects/{project}/deploy/{key}', function ($id, $key) {
+  $project = \App\Project::find($id);
+  if ($project->key == $key) {
+    dispatch(new \App\Jobs\DeployProject($project));
+    echo "OK...";
+  }
+});
+
 
 Route::get('profile', 'ProfileController@show');
 Route::put('profile', 'ProfileController@update');
