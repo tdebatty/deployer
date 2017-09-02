@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,3 +23,4 @@ Route::post('projects/{project}/deploy/{key}', function ($id, $key) {
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+*/
