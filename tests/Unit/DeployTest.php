@@ -115,6 +115,10 @@ class DeployTest extends TestCase {
         $project->repository = $this->repository;
         $job = new DeployProject($project);
         $job->handle();
+
+        $this->assertEquals(
+                40775,
+                decoct(fileperms($this->project_path . "/shared/data")));
     }
 
     public function testWritablePlugin() {
@@ -164,10 +168,14 @@ class DeployTest extends TestCase {
         $deploy = $job->handle();
 
         // Writable file
-        $this->assertEquals(33204, fileperms("/tmp/test/current/writable"));
+        $this->assertEquals(
+                100664,
+                decoct(fileperms("/tmp/test/current/writable")));
 
         // Writable directory
-        $this->assertEquals(16893, fileperms("/tmp/test/current/app/writable"));
+        $this->assertEquals(
+                40775,
+                decoct(fileperms("/tmp/test/current/app/writable")));
     }
 
     public function testMultiplePlugins() {
@@ -226,7 +234,9 @@ class DeployTest extends TestCase {
         $deploy = $job->handle();
 
         // Writable file
-        $this->assertEquals(33204, fileperms("/tmp/test/current/writable"));
+        $this->assertEquals(
+                100664,
+                decoct(fileperms("/tmp/test/current/writable")));
 
         $this->assertTrue(is_dir("/tmp/test/current/vendor"));
     }
