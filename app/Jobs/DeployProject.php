@@ -104,9 +104,15 @@ class DeployProject implements ShouldQueue {
                 $params = $task['params'];
             }
 
-            /* @var $p PluginInterface */
-            $p = new $plugin;
-            $p->run($deployment, $params);
+            $deployment->addLog($plugin . "\n");
+            try {
+                /* @var $p PluginInterface */
+                $p = new $plugin;
+                $p->run($deployment, $params);
+            } catch (Exception $ex) {
+                $deployment->addLog("FAILED!");
+                $deployment->addLog($ex->getMessage());
+            }
         }
     }
 
