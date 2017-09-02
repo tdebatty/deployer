@@ -119,6 +119,12 @@ class DeployTest extends TestCase {
         $this->assertEquals(
                 40775,
                 decoct(fileperms($this->project_path . "/shared/data")));
+
+        $group_info = posix_getgrgid(filegroup($this->project_path . "/shared/data"));
+        $group_name = $group_info["name"];
+        $this->assertEquals(
+                "www-data",
+                $group_name);
     }
 
     public function testWritablePlugin() {

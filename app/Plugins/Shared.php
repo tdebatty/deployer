@@ -35,6 +35,7 @@ class Shared implements PluginInterface {
 
             if (!file_exists($shared_folder)) {
                 mkdir($shared_folder, 0775, true);
+                chgrp($shared_folder, "www-data");
             }
 
             // Create symlink
