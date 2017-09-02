@@ -25,6 +25,8 @@ class Shared implements PluginInterface {
             $process = new Process("rm -Rf " . $folder);
             $process->setWorkingDirectory($deploy->getDeploymentRoot());
             $process->run();
+            $deploy->addLog($process->getOutput());
+            $deploy->addLog($process->getErrorOutput());
 
             // Create the shared folder if needed
             $shared_folder = $deploy->getProjectRoot()
