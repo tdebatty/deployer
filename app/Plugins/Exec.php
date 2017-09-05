@@ -6,6 +6,12 @@ use App\PluginInterface;
 use App\Deployment;
 use Symfony\Component\Process\Process;
 
+/**
+ * Execute commands.
+ * - plugin: App\Plugins\Exec
+ *   params:
+ *   - echo "hello!"
+ */
 class Exec implements PluginInterface {
 
     public function run(Deployment $deploy, $params) {

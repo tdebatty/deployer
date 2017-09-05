@@ -1,5 +1,49 @@
 # Deployer
-Simple deployer for GIT projects
+Simple deployer for PHP projects stored in a GIT repository. The deployment is
+described using a YAML file in the repository itself (deploy.yml).
+
+## Plugins
+
+### Shared
+
+Creates and maintains folders containing data that has to be shared (kept)
+between releases.
+
+Example ```deploy.yml```:
+```
+- plugin: App\Plugins\Shared
+  params:
+  - storage/mydata
+  - storage/another_folder
+```
+
+### Writable
+
+Make sure a file or directory is writable by the web server.
+
+```
+- plugin: App\Plugins\Writable
+  params:
+  - storage/cache
+```
+
+### Exec
+
+Run commands.
+
+```
+- plugin: App\Plugins\Exec
+  params:
+  - echo "hello!"
+```
+
+### Composer
+
+Run ```composer install```
+
+```
+- plugin: App\Plugins\Composer
+```
 
 ## Installation
 
@@ -21,7 +65,7 @@ git clone https://github.com/tdebatty/deployer.git
 APP_ENV=production
 APP_DEBUG=false
 APP_LOG_LEVEL=error
-APP_URL=http://deployer.web-d.be:8080
+APP_URL=http://deployer.example.com
 
 DEPLOY_ROOT=/var/www
 ```
@@ -44,8 +88,7 @@ If you are using a sqlite database:
 
 ```
 <VirtualHost *:8080>
-        ServerName deployer.be
-        ServerAlias deployer.web-d.be
+        ServerName deployer.example.com
 
         ServerAdmin webmaster@localhost
 
