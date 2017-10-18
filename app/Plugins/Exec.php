@@ -17,6 +17,7 @@ class Exec implements PluginInterface {
     public function run(Deployment $deploy, $params) {
 
         foreach ($params as $cmd) {
+            $deploy->addLog($cmd);
 
             $process = new Process($cmd);
             $process->setWorkingDirectory($deploy->getDeploymentRoot());
