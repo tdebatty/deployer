@@ -276,6 +276,6 @@ class DeployTest extends TestCase {
         $deploy = $job->handle();
 
         $lines = explode(PHP_EOL, trim($deploy->log));
-        $this->assertEquals("1", end($lines));
+        $this->assertEquals("echo 11", end($lines));
     }
 }
