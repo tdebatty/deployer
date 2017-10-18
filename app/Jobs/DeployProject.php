@@ -86,7 +86,9 @@ class DeployProject implements ShouldQueue {
         try {
             $tasks = Yaml::parse(file_get_contents($yaml_file));
         } catch (ParseException $e) {
-            $deployment->addLog("Unable to parse deploy.yml : " . $e->getMessage());
+            $deployment->addLog(
+                    "Unable to parse deploy.yml : " . $e->getMessage());
+            return;
         }
 
         if ($tasks == null) {
@@ -98,20 +100,22 @@ class DeployProject implements ShouldQueue {
         }
 
         foreach ($tasks as $task) {
-            $plugin = $task['plugin'];
-            $params = null;
-            if (isset($task['params'])) {
-                $params = $task['params'];
-            }
-
-            $deployment->addLog($plugin . "\n");
             try {
+                $plugin = $task['plugin'];
+                $params = null;
+                if (isset($task['params'])) {
+                    $params = $task['params'];
+                }
+
+                $deployment->addLog($plugin . "\n");
+
                 /* @var $p PluginInterface */
                 $p = new $plugin;
                 $p->run($deployment, $params);
             } catch (Exception $ex) {
                 $deployment->addLog("FAILED!");
                 $deployment->addLog($ex->getMessage());
+                break;
             }
         }
     }
