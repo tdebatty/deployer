@@ -24,7 +24,7 @@ class Deployment extends Model {
     }
 
     public function addLog($line) {
-        $this->log .= $line;
+        $this->log .= trim($line) . "\n";
     }
 
     public function getProjectRoot() {
