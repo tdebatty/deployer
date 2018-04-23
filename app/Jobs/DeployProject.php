@@ -50,6 +50,7 @@ class DeployProject implements ShouldQueue {
         // Clone
         $process = new Process(
                 'git clone ' . $this->project->repository . ' ' . $folder);
+        $process->setTimeout(300);
         $process->run();
         $deployment->addLog($process->getErrorOutput());
 
