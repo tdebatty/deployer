@@ -13,6 +13,8 @@ class Deployment extends Model {
      */
     protected $dateFormat = 'U';
 
+    protected $fillable = array('project_id', 'log', 'status');
+
     public function __construct(array $attributes = array()) {
         parent::__construct($attributes);
 

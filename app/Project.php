@@ -13,6 +13,8 @@ class Project extends Model {
    */
   protected $dateFormat = 'U';
 
+  protected $fillable = array('name', 'repository', 'branch', 'name', 'key');
+
   public function deployUrl() {
     return route(
         "deploy", ["id" => $this->id, "key" => $this->key]);
@@ -20,5 +22,10 @@ class Project extends Model {
 
   public function deployments() {
     return $this->hasMany('App\Deployment');
+  }
+
+  public function lastDeployments($count = 10) {
+      return $this->deployments()
+              ->orderBy('id', 'desc')->take($count)->get();
   }
 }

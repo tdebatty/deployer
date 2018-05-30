@@ -13,7 +13,7 @@ $this->layout('template');
 <p>Deploy hook: <a href="<?= $project->deployUrl() ?>"><?= $project->deployUrl() ?></a></p>
 
 <h2>Deployments</h2>
-<?php foreach($project->deployments as $deployment) : ?>
+<?php foreach($project->lastDeployments() as $deployment) : ?>
 <p><?= $deployment->created_at->toDateTimeString() ?></p>
 <pre class="log">
 <?= $deployment->log ?>
